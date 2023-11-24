@@ -1,33 +1,23 @@
 import User from "../models/userModel.js";
-import jwt from "jsonwebtoken";
-
 import asyncHandler from "express-async-handler";
+import verifyToken from "../utilis/verifyToken.js";
 
 const isAuth = asyncHandler(async (req, res, next) => {
-  let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    console.log("token found");
-    try {
-      token = req.headers.authorization.split(" ")[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.userAuth = await User.findById(decoded.id).select("-password");
-
-      console.log(decoded);
-
-      next();
-    } catch (error) {
-      console.error(error);
-      res.status(401);
-      throw new Error("Not authorized, token failed");
-    }
-  }
-
-  if (!token) {
-    res.status(401);
-    throw new Error("Not authorized, no token");
+  // get token
+  const headerObj = req.headers;
+  // console.log(headerObj);
+  const token = headerObj?.authorization?.split(" ")[1];
+  // console.log(token);
+  // verify token
+  const verifiedToken = verifyToken(token);
+  if (verifiedToken) {
+    const user = await User.findById(verifiedToken.id).select("-password");
+    req.userAuth = user;
+    // console.log(req.userAuth);
+    next();
+  } else {
+    const err = new Error("Token expired/invalid");
+    next(err);
   }
 });
 
