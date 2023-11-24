@@ -61,4 +61,53 @@ const getUserProfile = asyncHandler(async (req, res) => {
   });
 });
 
-export { registerUser, loginUser, getUserProfile };
+const updateUserProfile = asyncHandler(async (req, res) => {
+  const { name, email, password } = req.body;
+
+  // if email is taken
+  const userExist = await User.findOne({ email });
+  if (userExist) {
+    throw new Error("Email already taken");
+  }
+
+  // check if user update password
+  if (password) {
+    const user = await User.findByIdAndUpdate(
+      req.userAuth._id,
+      {
+        email,
+        password: await hashPassword(password),
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    res.status(201).json({
+      status: "success",
+      data: user,
+      message: "User Update successfully",
+    });
+  } else {
+    // update
+    const user = await User.findByIdAndUpdate(
+      req.userAuth._id,
+      {
+        name,
+        email,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    res.status(201).json({
+      status: "success",
+      data: user,
+      message: "User update successfully",
+    });
+  }
+});
+
+export { registerUser, loginUser, getUserProfile, updateUserProfile };
