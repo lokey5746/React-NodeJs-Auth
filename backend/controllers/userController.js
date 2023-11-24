@@ -27,6 +27,10 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc  Login User
+// @route POST /api/v1/users/login
+// @access Public
+
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   //   check if user exist
@@ -47,6 +51,9 @@ const loginUser = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc  Get User
+// @route GET /api/v1/users/profile
+// @access Private
 const getUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.userAuth._id).select(
     "-password -createdAt -updatedAt"
@@ -61,6 +68,9 @@ const getUserProfile = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc  Updating User
+// @route PUT /api/v1/users/updateProfile
+// @access Private
 const updateUserProfile = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -110,4 +120,17 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
-export { registerUser, loginUser, getUserProfile, updateUserProfile };
+// @desc  Admin GET all Users
+// @route PUT /api/v1/users
+// @access Private
+
+const getUsers = asyncHandler(async (req, res) => {
+  const users = await User.find({});
+  res.status(201).json({
+    status: "success",
+    data: users,
+    message: "Fetch all users",
+  });
+});
+
+export { registerUser, loginUser, getUserProfile, updateUserProfile, getUsers };
