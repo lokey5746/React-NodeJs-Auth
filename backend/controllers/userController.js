@@ -47,4 +47,18 @@ const loginUser = asyncHandler(async (req, res) => {
   });
 });
 
-export { registerUser, loginUser };
+const getUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.userAuth._id).select(
+    "-password -createdAt -updatedAt"
+  );
+  if (!user) {
+    throw new Error("User not found");
+  }
+  res.status(201).json({
+    status: "success",
+    message: "User profile",
+    data: user,
+  });
+});
+
+export { registerUser, loginUser, getUserProfile };
