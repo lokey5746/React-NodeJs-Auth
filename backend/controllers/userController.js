@@ -148,17 +148,35 @@ const adminDeleteUser = asyncHandler(async (req, res) => {
   } else {
     throw new Error("User not found");
   }
+});
 
-  // if (user) {
-  //   await user.remove();
-  //   res.status(201).json({
-  //     status: "success",
-  //     message: "User removed successfully",
-  //   });
-  // } else {
-  //   res.status(404);
-  //   throw new Error("User not found");
-  // }
+// @desc  Change Password
+// @route POST /api/v1/users/chanagepassword
+// @access Private
+
+const changePassword = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.userAuth._id);
+
+  const { oldPassword, password } = req.body;
+  if (!user) {
+    res.status(400);
+    throw new Error("user not found");
+  }
+
+  // check oldPassword with entered password
+
+  const isMatched = await verifyPassword(oldPassword, user.password);
+
+  if (user && isMatched) {
+    user.password = password;
+    await user.save();
+    res.status(200).json("Password Changed successfully");
+  } else {
+    res.status(400);
+    throw new Error("Old password is incorrect");
+  }
+
+  // save new
 });
 
 export {
@@ -168,4 +186,5 @@ export {
   updateUserProfile,
   getUsers,
   adminDeleteUser,
+  changePassword,
 };
