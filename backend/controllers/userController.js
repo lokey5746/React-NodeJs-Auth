@@ -2,6 +2,8 @@ import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 import { hashPassword, verifyPassword } from "../utilis/helper.js";
 import generateToken from "../utilis/generateToken.js";
+import Token from "../models/tokenModel.js";
+import crypto from "crypto";
 
 // @desc  Register User
 // @route POST /api/v1/users/register
@@ -167,6 +169,8 @@ const changePassword = asyncHandler(async (req, res) => {
 
   const isMatched = await verifyPassword(oldPassword, user.password);
 
+  // save new password
+
   if (user && isMatched) {
     user.password = password;
     await user.save();
@@ -175,8 +179,66 @@ const changePassword = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("Old password is incorrect");
   }
+});
 
-  // save new
+//@desc Get user forgotpassword
+//@route GET /api/users/forgotpassword
+//@access Public
+const forgotpassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    res.status(400);
+    throw new Error("User not found");
+  }
+
+  // delete existing token from DB
+  let token = await Token.findOne({ userId: user._id });
+  if (token) {
+    await token.deleteOne();
+  }
+
+  // create reset token
+  let resetToken = crypto.randomBytes(32).toString("hex") + user._id;
+
+  // Hash token
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  // save the token DB
+  await new Token({
+    userId: user._id,
+    token: hashedToken,
+    createdAt: Date.now(),
+    expiresAt: Date.now() + 30 * (60 * 1000),
+  }).save();
+
+  // construct reset url
+
+  const resetUrl = `${process.env.FRONTEND_URL}/resetpassword/${resetToken}`;
+
+  // Reset Email
+  const message = `
+  <h2>Hello ${user.name}</h2>
+  <p>Please use the url below to reset your password</p>  
+  <p>This reset link is valid for only 30minutes.</p>
+  <a href=${resetUrl} clicktracking=off>${resetUrl}</a>
+  <p>Regards...</p>
+  <p>HA IT Team</p>
+`;
+  const subject = "Password Reset Request";
+  const send_to = user.email;
+  const sent_from = process.env.EMAIL_USER;
+  try {
+    await sendEmail(subject, message, send_to, sent_from);
+    res.status(200).json({ success: true, message: "Reset Email Sent" });
+  } catch (error) {
+    res.status(500);
+    throw new Error("Email not sent, please try again");
+  }
 });
 
 export {
@@ -187,4 +249,5 @@ export {
   getUsers,
   adminDeleteUser,
   changePassword,
+  forgotpassword,
 };
