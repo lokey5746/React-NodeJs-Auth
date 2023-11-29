@@ -7,6 +7,8 @@ import {
   getUsers,
   adminDeleteUser,
   changePassword,
+  forgotpassword,
+  resetPassword,
 } from "../controllers/userController.js";
 import { isAuth } from "../middleware/isAuth.js";
 import { isAdmin } from "../middleware/isAdmin.js";
@@ -19,5 +21,7 @@ router.route("/login").post(loginUser);
 router.route("/profile").get(isAuth, getUserProfile);
 router.route("/updateProfile").put(isAuth, updateUserProfile);
 router.route("/changepassword").put(isAuth, changePassword);
+router.route("/forgotpassword").post(forgotpassword);
+router.route("/resetpassword/:resetToken").put(resetPassword);
 
 export default router;
