@@ -1,7 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
+import { useForm } from "react-hook-form";
+
 const SignIn = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const signIn = (e) => {
+    console.log("User Signin");
+  };
+
   return (
     <div className="flex flex-col items-center justify-center h-screen p-5">
       <div className=" max-w-lg space-y-7 md:space-y-10">
@@ -21,26 +36,38 @@ const SignIn = () => {
             Admin
           </button>
         </div>
-        <form action="" className="space-y-5">
+        <form onSubmit={handleSubmit(signIn)} className="space-y-5">
           <div className="flex flex-col space-y-2">
             <label htmlFor="" className="text-gray text-sm md:text-lg">
               Email Address
             </label>
             <input
+              {...register("email", { required: true })}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               type="email"
               className="p-3 md:p-4 rounded-md border border-gray text-xs md:text-sm bg-bg shadow-sm outline-none"
               placeholder="Enter your email address"
             />
+            {errors.email && (
+              <span className="text-xs text-red">Email Required</span>
+            )}
           </div>
           <div className="flex flex-col space-y-2">
             <label htmlFor="" className="text-gray text-sm md:text-lg">
               Password
             </label>
             <input
+              {...register("password", { required: true })}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               type="password"
               className="p-3 md:p-4 rounded-md border border-gray text-xs md:text-sm bg-bg shadow-sm outline-none"
               placeholder="Enter your email password "
             />
+            {errors.password && (
+              <span className="text-xs text-red">Password Required</span>
+            )}
           </div>
           <button className="p-3 md:p-4 rounded-md border-gray text-xs md:text-sm font-semibold bg-red shadow-sm w-full text-white">
             Sign In
