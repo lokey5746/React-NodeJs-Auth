@@ -4,12 +4,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        blue: "#8B80B6",
-        red: "#FE5000",
-        green: "#5CB85C",
-        gray: "#D9D9D9",
+        white: "#FAFAFB",
+        red: "#F03B7A",
+        purple: "#14163E",
+        gray: "#AEB0BF",
         purple: "#3CDBC0",
         title: "#717171",
+        bg: "#0F1436",
+        btn: "#191F4B",
       },
     },
     fontSize: {
