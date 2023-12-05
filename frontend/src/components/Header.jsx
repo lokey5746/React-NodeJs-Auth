@@ -5,8 +5,8 @@ const Header = () => {
   return (
     <div className="w-full mx-auto md:max-w-7xl md:py-5">
       <div className="flex items-center justify-between">
-        <h2>ReactNodeAuth</h2>
-        <FaUserAlt />
+        <h2 className="text-2xl text-white font-semibold">ReactNodeAuth</h2>
+        <FaUserAlt className="text-white text-lg" />
       </div>
     </div>
   );
