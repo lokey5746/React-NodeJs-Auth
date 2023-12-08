@@ -1,5 +1,8 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import { useSelector, useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { signin, reset } from "../../features/user/userSlice";
 
 import { useForm } from "react-hook-form";
 
@@ -7,14 +10,37 @@ const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.user
+  );
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
+    if (isSuccess || user) {
+      navigate("/");
+    }
+
+    dispatch(reset());
+  }, [dispatch, user, isError, isSuccess, message, navigate]);
+
   const signIn = (e) => {
-    console.log("User Signin");
+    const userData = {
+      email,
+      password,
+    };
+
+    dispatch(signin(userData));
   };
 
   return (

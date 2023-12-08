@@ -1,6 +1,8 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { useSelector, useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { signup, reset } from "../../features/user/userSlice";
 import { useForm } from "react-hook-form";
 
 const SignUp = () => {
@@ -8,14 +10,37 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.user
+  );
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
+    if (isSuccess || user) {
+      navigate("/dashboard");
+    }
+
+    dispatch(reset());
+  }, [dispatch, user, isError, isSuccess, message, navigate]);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const signUp = (e) => {
-    console.log("User signup");
+  const submitHandler = (e) => {
+    const userData = {
+      name,
+      email,
+      password,
+    };
+    dispatch(signup(userData));
   };
 
   return (
@@ -30,7 +55,7 @@ const SignUp = () => {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit(signUp)} className="space-y-5">
+        <form onSubmit={handleSubmit(submitHandler)} className="space-y-5">
           <div className="flex flex-col space-y-2">
             <label htmlFor="" className="text-gray text-sm md:text-lg">
               Full Name
@@ -79,7 +104,10 @@ const SignUp = () => {
               <span className="text-xs text-red">Password Required</span>
             )}
           </div>
-          <button className="p-3 md:p-4 rounded-md border-gray text-xs md:text-sm font-semibold bg-red shadow-sm w-full text-white">
+          <button
+            type="submit"
+            className="p-3 md:p-4 rounded-md border-gray text-xs md:text-sm font-semibold bg-red shadow-sm w-full text-white"
+          >
             Sign Up
           </button>
         </form>
