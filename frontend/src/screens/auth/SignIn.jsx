@@ -39,7 +39,6 @@ const SignIn = () => {
       email,
       password,
     };
-
     dispatch(signin(userData));
   };
 
@@ -72,7 +71,7 @@ const SignIn = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               type="email"
-              className="p-3 md:p-4 rounded-md border border-gray text-xs md:text-sm bg-bg shadow-sm outline-none"
+              className="p-3 md:p-4 rounded-md border border-gray text-xs md:text-sm bg-bg shadow-sm outline-none text-white"
               placeholder="Enter your email address"
             />
             {errors.email && (
@@ -88,7 +87,7 @@ const SignIn = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               type="password"
-              className="p-3 md:p-4 rounded-md border border-gray text-xs md:text-sm bg-bg shadow-sm outline-none"
+              className="p-3 md:p-4 rounded-md border border-gray text-xs md:text-sm bg-bg shadow-sm outline-none text-white"
               placeholder="Enter your email password "
             />
             {errors.password && (
