@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FaUserAlt } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { reset, signout } from "../features/user/userSlice";
 import { useNavigate, Link } from "react-router-dom";
-import { useEffect } from "react";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -13,9 +12,15 @@ const Header = () => {
     (state) => state.user
   );
 
+  useEffect(() => {
+    if (!user) {
+      navigate("/");
+    }
+  }, [dispatch, navigate, user]);
+
   const onSignout = () => {
     dispatch(signout());
-    navigate("/");
+
     dispatch(reset());
   };
 
